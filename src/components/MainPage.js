@@ -1,18 +1,37 @@
 import styled from 'styled-components';
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IoExitOutline } from "react-icons/io5";
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
+import { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
 
+import UserContext from '../context/UserContext';
 
 
 export default function MainPage(){
+    const [bankInfos, setBankInfos] = useState([]);
+
+    const {user} = useContext(UserContext);
+
+    const config = {
+        headers: {
+            "Authorization": `Bearer ${user}`
+        }
+    }
+
+    useEffect(() => {
+        const request = axios.get("http://localhost:4000/main-page", config);
+        request.then((response) => {console.log(response.data); setBankInfos(response.data)});
+        request.catch()
+    }, [])
+
+
     return(
         <Background>
             <Header>
                 <h1>Olá, User!</h1>
                 <IoExitOutline size="2em" color="white"/>
             </Header>
-            
             
             <Whitediv>
                 <List>
@@ -34,7 +53,6 @@ export default function MainPage(){
                     </NewEnt>
                 </Link>
                 
-
                 <Link to="/exit">
                     <NewExi>
                         <AiOutlineMinusCircle size="1.5em" color="white"/>
@@ -42,9 +60,6 @@ export default function MainPage(){
                     </NewExi>
                 </Link>
             </Options>
-
-
-
         </Background>
     )
 }

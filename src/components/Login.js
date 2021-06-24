@@ -1,15 +1,37 @@
 import styled from 'styled-components';
 import { Link, useHistory } from "react-router-dom";
+import { useState, useContext } from 'react';
+import axios from 'axios';
+
+import UserContext from '../context/UserContext';
 
 export default function Login(){
+    const {setUser} = useContext(UserContext);
+
+    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState("");
+
+    let history = useHistory();
+
+    const body = {
+        password,
+        email
+    }
+
+    function goToMainPage(){
+        const request = axios.post("http://localhost:4000/log-in", body);
+        request.then((response) => {setUser(response.data); history.push("/main-page")});
+        request.catch(() => {setPassword(""); setEmail("")})
+    }
+
     return(
         <FrontPage>
             <h1>MyWallet</h1>
 
-            <input type="text" placeholder="E-mail"/>
-            <input type="password" placeholder="Senha"/>
+            <input type="text" placeholder="E-mail" onChange={(e) => setEmail(e.target.value)} value = {email} />
+            <input type="password" placeholder="Senha" onChange = {(e) => setPassword(e.target.value)} value = {password}/>
 
-            <button>Entrar</button>
+            <button onClick = {goToMainPage} >Entrar</button>
 
             <Link to="/sign-up">
                 <p>Primeira vez aqui? Cadastre-se!</p>
@@ -36,7 +58,6 @@ const FrontPage = styled.div`
             margin-bottom: 30px;
         }
 
-
         input{
             width: 325px;
             height:55px;
@@ -45,7 +66,6 @@ const FrontPage = styled.div`
             padding-left: 10px;
             font-size: 20px;
             color: black;
-
         }
 
         button{

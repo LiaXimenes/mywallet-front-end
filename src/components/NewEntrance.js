@@ -1,16 +1,45 @@
 import styled from 'styled-components';
 import { useHistory } from "react-router-dom";
+import axios from 'axios';
+import { useState, useContext } from 'react';
+
+import UserContext from '../context/UserContext';
 
 export default function NewEntrance(){
+    const {user} = useContext(UserContext);
+
+    const [amount, setAmount] = useState("");
+    const [description, setDescription] = useState("");
+
+    let history = useHistory();
+
+    const body ={
+        amount: amount*(100),
+        description
+    }
+
+    const config = {
+        headers: {
+            "Authorization": `Bearer ${user}`
+        }
+    }
+
+    function postEntrance(){
+        const request = axios.post("http://localhost:4000/amount", body, config);
+        request.then(() => history.push("/main-page"));
+        request.catch((response) => {console.log(response); setDescription(""); setAmount("")});
+    }
+
+
     return(
         <Background>
             <Spacing>
                 <h1>Nova Entrada</h1>
 
-                <input type="text" placeholder="Valor"/>
-                <input type="text" placeholder="Descrição"/>
+                <input type="text" placeholder="Valor" onChange = {(e) => setAmount(e.target.value)} value={amount}/>
+                <input type="text" placeholder="Descrição" onChange = {(e) => setDescription(e.target.description)} value = {description}/>
 
-                <button>Salvar Entrada</button>
+                <button onClick={postEntrance}>Salvar Entrada</button>
             </Spacing>
         </Background>
     )

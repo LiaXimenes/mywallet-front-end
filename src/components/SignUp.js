@@ -1,17 +1,44 @@
 import styled from "styled-components";
 import { Link, useHistory } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function SignUp(){
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    let history = useHistory();
+
+    const body = {
+        name,
+        email,
+        password
+    }
+
+    function goToLogIn(){
+        if(password === confirmPassword){
+            const request = axios.post("http://localhost:4000/sign-up", body);
+            request.then(() => history.push("/"));
+            request.catch(() => {setPassword(""); setEmail(""); setConfirmPassword(""); setName("")})
+
+        } else {
+            alert("Confirmar senha não é o mesmo de senha")
+        }
+    }
+
+
     return(
         <FrontPage>
             <h1>MyWallet</h1>
 
-            <input type="text" placeholder="Nome"></input>
-            <input type="text" placeholder="E-mail"></input>
-            <input type="password" placeholder="Senha"></input>
-            <input type="password" placeholder="Confirmar a senha"></input>
+            <input type="text" placeholder="Nome" onChange={(e) => setName(e.target.value)} value = {name} />
+            <input type="text" placeholder="E-mail" onChange={(e) => setEmail(e.target.value)} value = {email} />
+            <input type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} value = {password} />
+            <input type="password" placeholder="Confirmar a senha" onChange={(e) => setConfirmPassword(e.target.value)} value = {confirmPassword} />
 
-            <button>Cadastrar</button>
+            <button onClick={goToLogIn}>Cadastrar</button>
 
             <Link to="/">
                 <p>Já possui cadastro? Entre agora!</p>

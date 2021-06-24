@@ -2,6 +2,8 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter, Switch, Route} from "react-router-dom";
 import {useState} from "react";
 
+import UserContext from './context/UserContext';
+
 import Login from "./components/Login.js";
 import SignUp from "./components/SignUp.js";
 import MainPage from "./components/MainPage.js";
@@ -13,7 +15,7 @@ function App(){
 
 
     return(
-        <>
+        <UserContext.Provider value={{user, setUser}}>
             <BrowserRouter> 
 			<Switch>
 				<Route path="/" exact>
@@ -33,7 +35,7 @@ function App(){
 				</Route>
 			</Switch>
 		    </BrowserRouter>
-        </>
+        </UserContext.Provider>
     )
 }
 
