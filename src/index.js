@@ -11,7 +11,7 @@ import NewEntrance from "./components/NewEntrance.js";
 import NewExit from "./components/NewExit.js";
 
 function App(){
-    const [user, setUser] = useState([])
+    const [user, setUser] = useState(localStorage.length!==0 ? JSON.parse(localStorage.getItem('list')) : [])
 
 
     return(

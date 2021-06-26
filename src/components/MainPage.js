@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { IoExitOutline } from "react-icons/io5";
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import { useEffect, useState, useContext } from 'react';
@@ -10,8 +10,15 @@ import UserContext from '../context/UserContext';
 
 export default function MainPage(){
     const [bankInfos, setBankInfos] = useState([]);
+    const [totalAmount, setTotalAmount] = useState("");
 
     const {user} = useContext(UserContext);
+
+    let history = useHistory();
+    let arrayOfAmounts = [];
+    let total= 0;
+
+
 
     const config = {
         headers: {
@@ -19,28 +26,52 @@ export default function MainPage(){
         }
     }
 
+    
     useEffect(() => {
-        const request = axios.get("http://localhost:4000/main-page", config);
+        if(bankInfos){
+            for(let i of bankInfos){
+                arrayOfAmounts.push(i.amount)
+            }
+    
+            for(let i = 0; i < arrayOfAmounts.length; i++){
+                let amount = parseInt(arrayOfAmounts[i])
+                total += amount;
+            }
+            setTotalAmount(total)
+            console.log(arrayOfAmounts)
+        }
+    }, [arrayOfAmounts])
+
+    useEffect(() => {
+        const request = axios.get("http://localhost:4000/amount", config);
         request.then((response) => {console.log(response.data); setBankInfos(response.data)});
         request.catch()
     }, [])
 
+    function exitApp(){
+        localStorage.removeItem('list');
+        history.push("/");
+    }
 
     return(
         <Background>
             <Header>
                 <h1>Olá, User!</h1>
-                <IoExitOutline size="2em" color="white"/>
+                <span onClick={exitApp}>
+                    <IoExitOutline size="2em" color="white"/>
+                </span>
             </Header>
             
             <Whitediv>
                 <List>
-                    <li> haha </li>
-                    <li> haha </li> 
+                    {bankInfos.map(info => 
+                    <li><span>{info.date}</span> {info.description} <ColoredAmount colour={info.amount}> {info.amount/100} </ColoredAmount></li> 
+                    )}
+                    
                 </List>
                 
                 <Balance>
-                    <p>SALDO</p>
+                    <p>SALDO</p><ColoredTotalAmount colour={totalAmount}>{totalAmount/100}</ColoredTotalAmount>
                 </Balance>
             </Whitediv>
 
@@ -112,13 +143,35 @@ const List = styled.div`
 
         li{
             padding-top: 15px;
+            margin-right: 10px;
+            font-size:16px;
+            font-family: 'Raleway', sans-serif;
+            color: #000;
+            display: flex;
+            flex-direction: row;
+            position: relative;
+
+            span{
+                color: #C6C6C6;
+                padding-right: 10px;
+                
+            }
         }
     }
+`;
+
+const ColoredAmount = styled.p`
+    color: ${props => (props.colour > 0 ? "#03AC00" : "#C70000")};
+    position: absolute;
+    right: 0;
 `;
 
 const Balance = styled.div`
     @media (max-width: 500px){
         width: 325px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         
         p{
             padding-top: 10px;
@@ -127,6 +180,15 @@ const Balance = styled.div`
             font-size: 17px;
         }
     }
+`;
+
+const ColoredTotalAmount = styled.p`
+    padding-top: 10px;
+    font-weight: 700;
+    font-family: 'Raleway', sans-serif;
+    font-size: 17px;
+    padding-right: 10px;
+    color:${props => (props.colour > 0 ? "#03AC00" : "#C70000")};
 `;
 
 const Options = styled.div`

@@ -1,17 +1,27 @@
 import styled from 'styled-components';
 import { Link, useHistory } from "react-router-dom";
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 import UserContext from '../context/UserContext';
 
 export default function Login(){
-    const {setUser} = useContext(UserContext);
+    const {user, setUser} = useContext(UserContext);
 
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("");
 
     let history = useHistory();
+
+    useEffect(() => {
+        if (localStorage.length !== 0){
+            const listString = localStorage.getItem("list");
+            const list = JSON.parse(listString);
+            setUser(list)
+            console.log(list)
+            history.push("/main-page")
+        }
+    }, [])
 
     const body = {
         password,
@@ -20,8 +30,22 @@ export default function Login(){
 
     function goToMainPage(){
         const request = axios.post("http://localhost:4000/log-in", body);
-        request.then((response) => {setUser(response.data); history.push("/main-page")});
-        request.catch(() => {setPassword(""); setEmail("")})
+        request.then((response) => {setUser(response.data);
+
+            const tokenString = JSON.stringify(user);
+            localStorage.setItem('list', tokenString);
+            console.log(localStorage.getItem('list'))
+            history.push("/main-page");
+        });
+        request.catch((errors))
+
+        function errors(error){
+            if(error.response.status === 401){
+                alert("Email ou senha invalidos")
+            }
+            setPassword(""); setEmail("")
+
+        }
     }
 
     return(

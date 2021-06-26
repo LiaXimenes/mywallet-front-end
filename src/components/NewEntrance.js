@@ -37,7 +37,7 @@ export default function NewEntrance(){
                 <h1>Nova Entrada</h1>
 
                 <input type="text" placeholder="Valor" onChange = {(e) => setAmount(e.target.value)} value={amount}/>
-                <input type="text" placeholder="Descrição" onChange = {(e) => setDescription(e.target.description)} value = {description}/>
+                <input type="text" placeholder="Descrição" onChange = {(e) => setDescription(e.target.value)} value = {description}/>
 
                 <button onClick={postEntrance}>Salvar Entrada</button>
             </Spacing>

@@ -18,13 +18,24 @@ export default function SignUp(){
     }
 
     function goToLogIn(){
-        if(password === confirmPassword){
-            const request = axios.post("http://localhost:4000/sign-up", body);
-            request.then(() => history.push("/"));
-            request.catch(() => {setPassword(""); setEmail(""); setConfirmPassword(""); setName("")})
+        if(name === "" || email === "" || password === "" || password !== confirmPassword){
+            alert("Preencha todos os campos corretamente")
 
         } else {
-            alert("Confirmar senha não é o mesmo de senha")
+            const request = axios.post("http://localhost:4000/sign-up", body);
+            request.then(() => history.push("/"));
+            request.catch(errors)
+
+            function errors(error){
+                if(error.response.status === 403){
+                    alert("O e-mail inserido já foi cadastrado")
+                } 
+
+                setName("");
+                setEmail(""); 
+                setPassword("");
+                setConfirmPassword(""); 
+            }
         }
     }
 
